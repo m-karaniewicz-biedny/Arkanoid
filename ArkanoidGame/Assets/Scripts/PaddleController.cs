@@ -10,14 +10,9 @@ public class PaddleController : MonoBehaviour
 
 
     [SerializeField] private Rigidbody2D ballPrefab;
-    [SerializeField] private float ballLaunchSpeed = 5f;
+    [SerializeField] private float ballLaunchSpeed = 10f;
     [SerializeField] private float paddleLength = 3f;
     [SerializeField] private bool useRBVelocityBasedMovement = true;
-
-    [Header("Velocity settings")]
-    [Range(0, 2)]
-    [SerializeField]
-    private float mouseSensitivityMult = 0.5f;
 
     Vector2 mouseAxis;
 
@@ -27,14 +22,9 @@ public class PaddleController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
     }
 
-    private void Start()
-    {
-        SpawnNewBall();
-    }
-
     private void Update()
     {
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0))
         {
             if (attachedBalls.Count > 0) LaunchAttachedBalls();
         }
@@ -47,11 +37,12 @@ public class PaddleController : MonoBehaviour
         else
         {
             //Move paddle to mouse position using tranform.position
-            float posXLimit = GameManager.instance.GetPlayAreaWidth() / 2 - paddleLength / 2;
+            float posXMax = LevelManager.playArea.width - paddleLength / 2;
+            float posXMin = 0 + paddleLength / 2;
 
             Vector2 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             transform.position = new Vector3(Mathf.Clamp(
-                targetPos.x, -posXLimit, posXLimit),
+                targetPos.x, posXMin, posXMax),
                 transform.position.y, transform.position.z);
         }
 
@@ -71,15 +62,16 @@ public class PaddleController : MonoBehaviour
             Vector2 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 posDelta = new Vector2((targetPos.x - transform.position.x), 0);
 
-            float posXLimit = GameManager.instance.GetPlayAreaWidth() / 2 - paddleLength / 2;
+            float posXMax = LevelManager.playArea.width - paddleLength / 2;
+            float posXMin = 0 + paddleLength / 2;
 
-            if (transform.position.x + posDelta.x > posXLimit)
+            if (transform.position.x + posDelta.x > posXMax)
             {
-                posDelta.x = posXLimit - transform.position.x;
+                posDelta.x = posXMax - transform.position.x;
             }
-            else if (transform.position.x + posDelta.x < -posXLimit)
+            else if (transform.position.x + posDelta.x < posXMin)
             {
-                posDelta.x = -posXLimit - transform.position.x;
+                posDelta.x = posXMin - transform.position.x;
             }
 
             rb.velocity = posDelta / Time.deltaTime;
@@ -101,6 +93,7 @@ public class PaddleController : MonoBehaviour
     {
         ballInstance.simulated = true;
         ballInstance.velocity = velocity;
+        Debug.Log($"Launching with {velocity}");
     }
 
     private void AttachBall(Vector2 attachmentPosition, Rigidbody2D ballInstance)
@@ -114,7 +107,9 @@ public class PaddleController : MonoBehaviour
     {
         foreach (KeyValuePair<Vector2, Rigidbody2D> entry in attachedBalls)
         {
-            LaunchBall(entry.Value, (entry.Key - (Vector2)transform.position).normalized * ballLaunchSpeed);
+            Vector2 dir = entry.Key.normalized;
+
+            LaunchBall(entry.Value, dir * ballLaunchSpeed);
         }
 
         attachedBalls.Clear();
@@ -123,6 +118,7 @@ public class PaddleController : MonoBehaviour
     public Rigidbody2D SpawnNewBall()
     {
         Rigidbody2D newBall = Instantiate(ballPrefab, GetNextBallSpawnPosition(), Quaternion.identity);
+        
         AttachBall(newBall.transform.position, newBall);
 
         return newBall;

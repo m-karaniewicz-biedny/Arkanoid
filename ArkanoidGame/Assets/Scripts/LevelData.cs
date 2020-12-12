@@ -7,6 +7,5 @@ public class LevelData : ScriptableObject
 {
     public int cameraHeight = 8;
     public Sprite backgroundImage;
-    public GameObject levelPrefab;
     public Texture2D colorCodeTexture;
 }
