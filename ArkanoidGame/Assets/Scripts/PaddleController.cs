@@ -148,10 +148,13 @@ public class PaddleController : MonoBehaviour
 
     public Rigidbody2D SpawnNewBall()
     {
-        Rigidbody2D newBall = Instantiate(ballPrefab, GetNextBallSpawnPosition(), Quaternion.identity);
+        Vector2 localSpawnPos = GetNextBallSpawnPosition();
+        Rigidbody2D newBall = Instantiate(ballPrefab, (Vector2)transform.position + localSpawnPos, Quaternion.identity);
         LevelManager.entityList.Add(newBall.gameObject);
-        AttachBall(newBall.transform.position, newBall);
+        AttachBall(localSpawnPos, newBall);
         GameManager.instance.OnBallGained();
+
+        VFXManager.SpawnParticleOneshot(VFXManager.instance.ballSpawnExplosionVFX, newBall.transform.position);
 
         return newBall;
     }

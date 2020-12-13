@@ -49,6 +49,9 @@ public class BaseBlock : MonoBehaviour
     {
         if (LevelManager.eliminationRequiredList.Contains(gameObject))
             LevelManager.eliminationRequiredList.Remove(gameObject);
+
+        VFXManager.SpawnParticleOneshot(VFXManager.instance.blockDeathVFX, transform.position);
+
         Destroy(gameObject);
     }
 
@@ -56,6 +59,7 @@ public class BaseBlock : MonoBehaviour
     {
         if (collision.collider.CompareTag("Ball"))
         {
+            VFXManager.SpawnParticleOneshot(VFXManager.instance.blockDamagedVFX, collision.contacts[0].point);
             OnHit();
         }
 

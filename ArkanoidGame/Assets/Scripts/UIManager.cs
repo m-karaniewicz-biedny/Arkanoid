@@ -19,20 +19,20 @@ public class UIManager : MonoBehaviour
 
     public void TitleFadeout(float duration)
     {
-        StartCoroutine(UITextFadeout(duration, title));
+        StartCoroutine(UITextFadeout(duration, title, 2));
     }
 
 
 
-    public static IEnumerator UITextFadeout(float duration, TextMeshProUGUI text)
+    public static IEnumerator UITextFadeout(float duration, TextMeshProUGUI text, float smoothing)
     {
         float timer = 0;
         Color startingColor = text.color;
 
         while (timer < duration)
         {
-            text.color = new Color(text.color.r, text.color.g, text.color.b, 
-                Mathf.Lerp(startingColor.a, 0, timer / duration));
+            text.color = new Color(text.color.r, text.color.g, text.color.b,
+                Mathf.Lerp(startingColor.a, 0, Mathf.Pow(timer / duration, smoothing)));
             //Color.Lerp(startingColor, Color.clear, timer / duration);
 
             timer += Time.deltaTime;

@@ -13,9 +13,8 @@ public class GameManager : MonoBehaviour
 
     private int activeBalls = 0;
 
-    public bool isUIActive = true;
-
-    public bool intro = true;
+    internal bool isUIActive = true;
+    internal bool intro = true;
 
     internal PaddleController vaus;
 
@@ -115,7 +114,7 @@ public class GameManager : MonoBehaviour
 
         vaus.SpawnStartingBalls();
 
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.75f);
 
 
         vaus.SetControlsActive(true);
