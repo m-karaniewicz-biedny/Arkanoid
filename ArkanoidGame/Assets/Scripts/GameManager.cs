@@ -20,12 +20,12 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        Random.InitState(Random.Range(-100000,100000));
+        Random.InitState(Random.Range(-100000, 100000));
 
         if (instance == null)
         {
             instance = this;
-        } 
+        }
         else Destroy(gameObject);
 
         lm = GetComponent<LevelManager>();
@@ -40,7 +40,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(allowEvents)
+        if (allowEvents)
         {
             if (LevelManager.eliminationRequiredList.Count == 0)
             {
@@ -65,7 +65,6 @@ public class GameManager : MonoBehaviour
         activeBalls = 0;
         allowEvents = true;
 
-        lm.LoadLevel(levelProgress);
 
 
         StartCoroutine(GameStartSequence());
@@ -84,17 +83,13 @@ public class GameManager : MonoBehaviour
         vaus.SetControlsActive(false);
         float _duration;
 
-        if(intro)
+        if (intro)
         {
+            lm.LoadLevel(levelProgress);
             vaus.transform.position = new Vector2(LevelManager.playArea.width / 2f, 1f);
             vaus.SetPaddleLength(LevelManager.playArea.width);
             yield return new WaitForSeconds(2f);
-        }
-
-        if (intro)
-        {
             UIManager.instance.TitleFadeout(3f);
-
         }
         else
         {
@@ -104,6 +99,8 @@ public class GameManager : MonoBehaviour
             StartCoroutine(vaus.ResizePaddleOverTimeSequence(LevelManager.playArea.width, _duration, 3f));
 
             yield return new WaitForSeconds(_duration);
+
+            lm.LoadLevel(levelProgress);
 
             yield return new WaitForSeconds(0.5f);
         }
@@ -134,11 +131,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameWonSequence()
     {
-        Time.timeScale = 0.5f;
+        StartCoroutine(SmoothTimeSlowSequence(2f,1f,1f,1f));
 
-        yield return new WaitForSecondsRealtime(3f);
-
-        Time.timeScale = 1f;
+        yield return new WaitForSecondsRealtime(4f);
 
         levelProgress++;
 
@@ -147,5 +142,34 @@ public class GameManager : MonoBehaviour
         yield return null;
     }
 
+
+    private static IEnumerator SmoothTimeSlowSequence(float durationToFullStop = 1f, float fullStopDuration = 1f, float returnToNormalDuration = 1f, float smoothing = 1)
+    {
+        float timer = 0;
+
+        while (timer < durationToFullStop)
+        {
+            Time.timeScale = Mathf.Lerp(1, 0, Mathf.Pow(timer / durationToFullStop, smoothing));
+
+            timer += Time.unscaledDeltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Time.timeScale = 0;
+
+        yield return new WaitForSecondsRealtime(fullStopDuration);
+
+        timer = 0;
+
+        while (timer < returnToNormalDuration)
+        {
+            Time.timeScale = Mathf.Lerp(0, 1, Mathf.Pow(timer / durationToFullStop, smoothing));
+
+            timer += Time.unscaledDeltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        Time.timeScale = 1;
+    }
 
 }

@@ -6,6 +6,9 @@ public class Ball : MonoBehaviour
 {
     public bool active = true;
 
+    internal int piercing = 0;
+    internal float baseSpeed = 5;//not implemented first change physics
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
