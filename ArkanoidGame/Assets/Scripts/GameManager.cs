@@ -11,6 +11,8 @@ public class GameManager : MonoBehaviour
 
     internal bool allowEvents = true;
 
+    private int activeBalls = 0;
+
     private void Awake()
     {
         Random.InitState(Random.Range(-100000,100000));
@@ -30,8 +32,31 @@ public class GameManager : MonoBehaviour
         GameStart();
     }
 
+    private void Update()
+    {
+        if(allowEvents)
+        {
+            if (LevelManager.eliminationRequiredList.Count == 0)
+            {
+                GameOver(true);
+            }
+        }
+    }
+
+    public void OnBallGained()
+    {
+        activeBalls++;
+    }
+
+    public void OnBallLost()
+    {
+        activeBalls--;
+        if (activeBalls <= 0) GameOver(false);
+    }
+
     public void GameStart()
     {
+        activeBalls = 0;
         allowEvents = true;
         lm.LoadLevel(levelProgress);
     }

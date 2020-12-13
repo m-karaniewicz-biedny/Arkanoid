@@ -17,16 +17,19 @@ public class LevelManager : MonoBehaviour
     private int currentLevelIndex;
 
     [HideInInspector]
-    public List<GameObject> entityList = new List<GameObject>();
+    public static List<GameObject> entityList = new List<GameObject>();
     [HideInInspector]
-    public List<BaseBlock> blockList = new List<BaseBlock>();
+    public static List<GameObject> eliminationRequiredList = new List<GameObject>();
 
-    Vector2 gridCellExtents = new Vector2(0.5f, 0.5f);
+    private Vector2 gridCellExtents = new Vector2(0.5f, 0.5f);
+    private static Transform levelParent;
 
     public static Rect playArea = new Rect();
 
     private void Awake()
     {
+        levelParent = new GameObject().transform;
+        levelParent.name = "LevelParent";
         levels = Resources.LoadAll<Texture2D>("Levels");
         if (levels.Length <= 0) Debug.LogError("No levels loaded");
         if (colorMap == null) Debug.LogError("Missing color map reference");
@@ -51,6 +54,7 @@ public class LevelManager : MonoBehaviour
         {
             Destroy(entry);
         }
+        eliminationRequiredList.Clear();
         entityList.Clear();
     }
 
@@ -68,7 +72,8 @@ public class LevelManager : MonoBehaviour
 
             PaddleController vaus = FindObjectOfType<PaddleController>();
             vaus.transform.position = new Vector2(playArea.width / 2f, 1f);
-            vaus.SpawnNewBall();
+
+            vaus.SpawnStartingBalls();
 
             SpawnLevelBorders(playArea);
 
@@ -125,8 +130,14 @@ public class LevelManager : MonoBehaviour
         {
             for (int y = 0; y < values.GetLength(1); y++)
             {
-                CreateLevelElement(prefabList[values[x, y]], new Vector2(x, y));
-
+                GameObject obj = CreateLevelElement(prefabList[values[x, y]], new Vector2(x, y));
+                if(obj!=null)
+                {
+                    if (obj.CompareTag("Required"))
+                    {
+                        eliminationRequiredList.Add(obj);
+                    }
+                }
             }
         }
     }
@@ -146,7 +157,7 @@ public class LevelManager : MonoBehaviour
     {
         if (prefab != null)
         {
-            GameObject obj = Instantiate(prefab, position + gridCellExtents, Quaternion.identity);
+            GameObject obj = Instantiate(prefab, position + gridCellExtents, Quaternion.identity,levelParent);
             entityList.Add(obj);
 
             return obj;

@@ -12,7 +12,7 @@ public class TriggerZone : MonoBehaviour
     {
         if(mode == Mode.loss && GameManager.instance.allowEvents)
         {
-            GameManager.instance.GameOver(false);
+            GameManager.instance.OnBallLost();
         }
         //TODO slow down? speed up? invisible ball?
     }

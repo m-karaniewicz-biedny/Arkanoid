@@ -10,6 +10,7 @@ public class PaddleController : MonoBehaviour
 
 
     [SerializeField] private Rigidbody2D ballPrefab;
+    [SerializeField] private int startingBalls = 1;
     [SerializeField] private float ballLaunchSpeed = 10f;
     [SerializeField] private float paddleLength = 3f;
     [SerializeField] private bool useRBVelocityBasedMovement = true;
@@ -93,7 +94,6 @@ public class PaddleController : MonoBehaviour
     {
         ballInstance.simulated = true;
         ballInstance.velocity = velocity;
-        Debug.Log($"Launching with {velocity}");
     }
 
     private void AttachBall(Vector2 attachmentPosition, Rigidbody2D ballInstance)
@@ -115,11 +115,20 @@ public class PaddleController : MonoBehaviour
         attachedBalls.Clear();
     }
 
+    public void SpawnStartingBalls()
+    {
+        for (int i = 0; i < startingBalls; i++)
+        {
+            SpawnNewBall();
+        }
+    }
+
     public Rigidbody2D SpawnNewBall()
     {
         Rigidbody2D newBall = Instantiate(ballPrefab, GetNextBallSpawnPosition(), Quaternion.identity);
-        
+        LevelManager.entityList.Add(newBall.gameObject);
         AttachBall(newBall.transform.position, newBall);
+        GameManager.instance.OnBallGained();
 
         return newBall;
     }

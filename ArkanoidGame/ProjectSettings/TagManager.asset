@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ball
+  - Required
   layers:
   - Default
   - TransparentFX
@@ -14,7 +15,7 @@ TagManager:
   - UI
   - 
   - 
-  - 
+  - Ball
   - 
   - 
   - 
@@ -42,12 +43,18 @@ TagManager:
   - name: Background
     uniqueID: 2804958373
     locked: 1
-  - name: Behind
+  - name: Walls
+    uniqueID: 1917587561
+    locked: 0
+  - name: Blocks
     uniqueID: 1660793759
     locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: InFront
+  - name: Paddle
+    uniqueID: 1510748949
+    locked: 0
+  - name: Ball
     uniqueID: 3153406291
     locked: 0

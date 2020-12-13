@@ -14,7 +14,7 @@ public class BaseBlock : MonoBehaviour
 
     private void Awake()
     {
-        sr = GetComponent<SpriteRenderer>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         UpdateDamageVisuals(hitPoints);
     }
 
@@ -47,6 +47,8 @@ public class BaseBlock : MonoBehaviour
 
     public virtual void OnDeath()
     {
+        if (LevelManager.eliminationRequiredList.Contains(gameObject))
+            LevelManager.eliminationRequiredList.Remove(gameObject);
         Destroy(gameObject);
     }
 
