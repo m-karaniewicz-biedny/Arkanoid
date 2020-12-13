@@ -10,6 +10,7 @@ public class LevelManager : MonoBehaviour
 
     [SerializeField] private GameObject wallPrefab;
     [SerializeField] private GameObject lossTriggerPrefab;
+    [SerializeField] private GameObject backgroundPrefab;
     [SerializeField] private ColorMap colorMap;
 
     private Texture2D[] levels;
@@ -70,10 +71,7 @@ public class LevelManager : MonoBehaviour
 
             LoadLevelFromTexture(levels[currentLevelIndex], colorMap);
 
-            PaddleController vaus = FindObjectOfType<PaddleController>();
-            vaus.transform.position = new Vector2(playArea.width / 2f, 1f);
 
-            vaus.SpawnStartingBalls();
 
             SpawnLevelBorders(playArea);
 
@@ -87,6 +85,9 @@ public class LevelManager : MonoBehaviour
         Rect inflatedBorder = new Rect(levelBorder);
         inflatedBorder.width += defaultBorderSize.x;
         inflatedBorder.height += defaultBorderSize.y;
+
+        //Background
+        SpawnRectPrefab(backgroundPrefab, levelBorder);
 
         //Ceiling
         SpawnRectPrefab(wallPrefab, new Rect(

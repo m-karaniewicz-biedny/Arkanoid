@@ -8,15 +8,15 @@ public class PaddleController : MonoBehaviour
 
     public Dictionary<Vector2, Rigidbody2D> attachedBalls = new Dictionary<Vector2, Rigidbody2D>();
 
-
     [SerializeField] private Rigidbody2D ballPrefab;
     [SerializeField] private int startingBalls = 1;
     [SerializeField] private float ballLaunchSpeed = 10f;
-    [SerializeField] private float paddleLength = 3f;
     [SerializeField] private bool useRBVelocityBasedMovement = true;
+    public float defaultPaddleLength = 3f;
 
-    Vector2 mouseAxis;
+    [SerializeField] private float currentPaddleLength = 3f;
 
+    private bool canControl = false;
 
     private void Awake()
     {
@@ -25,26 +25,24 @@ public class PaddleController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (canControl)
         {
-            if (attachedBalls.Count > 0) LaunchAttachedBalls();
-        }
+            if (Input.GetMouseButtonDown(0))
+            {
+                if (attachedBalls.Count > 0) LaunchAttachedBalls();
+            }
 
+            if (!useRBVelocityBasedMovement)
+            {
+                //Move paddle to mouse position using tranform.position
+                float posXMax = LevelManager.playArea.width - currentPaddleLength / 2;
+                float posXMin = 0 + currentPaddleLength / 2;
 
-        if (useRBVelocityBasedMovement)
-        {
-            mouseAxis = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
-        }
-        else
-        {
-            //Move paddle to mouse position using tranform.position
-            float posXMax = LevelManager.playArea.width - paddleLength / 2;
-            float posXMin = 0 + paddleLength / 2;
-
-            Vector2 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            transform.position = new Vector3(Mathf.Clamp(
-                targetPos.x, posXMin, posXMax),
-                transform.position.y, transform.position.z);
+                Vector2 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                transform.position = new Vector3(Mathf.Clamp(
+                    targetPos.x, posXMin, posXMax),
+                    transform.position.y, transform.position.z);
+            }
         }
 
         //Update attached balls
@@ -57,14 +55,14 @@ public class PaddleController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (useRBVelocityBasedMovement)
+        if (useRBVelocityBasedMovement && canControl)
         {
             //Move paddle to mouse position using Rigidbody2D.velocity to better detect collisions
             Vector2 targetPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 posDelta = new Vector2((targetPos.x - transform.position.x), 0);
 
-            float posXMax = LevelManager.playArea.width - paddleLength / 2;
-            float posXMin = 0 + paddleLength / 2;
+            float posXMax = LevelManager.playArea.width - currentPaddleLength / 2;
+            float posXMin = 0 + currentPaddleLength / 2;
 
             if (transform.position.x + posDelta.x > posXMax)
             {
@@ -81,12 +79,37 @@ public class PaddleController : MonoBehaviour
 
     private void OnValidate()
     {
-        SetPaddleLength(paddleLength);
+        SetPaddleLength(currentPaddleLength);
+    }
+
+
+
+    public IEnumerator ResizePaddleOverTimeSequence(float targetLength, float duration, float smoothing = 1)
+    {
+        float timer = 0;
+        float startingLength = currentPaddleLength;
+
+        while (timer < duration)
+        {
+            SetPaddleLength(Mathf.Lerp(startingLength, targetLength, Mathf.Pow(timer / duration, smoothing)));
+
+            timer += Time.deltaTime;
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        SetPaddleLength(targetLength);
+    }
+
+    public void SetControlsActive(bool active = true)
+    {
+        rb.velocity = Vector2.zero;
+        canControl = active;
     }
 
     public void SetPaddleLength(float _length)
     {
-        paddleLength = _length;
+        currentPaddleLength = _length;
         transform.localScale = new Vector2(_length, transform.localScale.y);
     }
 
@@ -136,7 +159,7 @@ public class PaddleController : MonoBehaviour
     public Vector2 GetNextBallSpawnPosition()
     {
         //TODO better position selection, paddle height?
-        return new Vector2(Random.Range(0, paddleLength) - paddleLength / 2, 1);
+        return new Vector2(Random.Range(0, currentPaddleLength) - currentPaddleLength / 2, 1);
     }
 
 }

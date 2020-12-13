@@ -6,6 +6,30 @@ public static class Helpers
 {
 
     #region Static Functions
+    /// <summary>
+    /// Move transform over time
+    /// </summary>
+    /// <param name="_transform"></param>
+    /// <param name="targetPosition"></param>
+    /// <param name="duration"></param>
+    /// <param name="smoothing"></param>
+    /// <returns></returns>
+    public static IEnumerator MoveObjectOverTimeSequence(Transform _transform, Vector3 targetPosition, float duration, float smoothing = 1)
+    {
+        float timer = 0;
+        Vector3 startingPosition = _transform.position;
+
+        while (timer < duration)
+        {
+            _transform.position = Vector3.Lerp(startingPosition, targetPosition, Mathf.Pow(timer / duration, smoothing));
+
+            timer += Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+
+        _transform.position = targetPosition;
+    }
+
 
     /// <summary>
     /// Remainder from diving entryValue by modulus

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 01fff0382744012478e432d6d8e31da5
+guid: 81300fdd9f96e41409f9ea0caa2d6a8f
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -8,9 +8,9 @@ TrueTypeFontImporter:
   characterSpacing: 0
   characterPadding: 1
   includeFontData: 1
-  fontName: Dream MMA
+  fontName: Neuropol
   fontNames:
-  - Dream MMA
+  - Neuropol
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

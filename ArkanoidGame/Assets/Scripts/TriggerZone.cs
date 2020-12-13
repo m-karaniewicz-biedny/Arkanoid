@@ -10,10 +10,15 @@ public class TriggerZone : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(mode == Mode.loss && GameManager.instance.allowEvents)
+        if (collision.CompareTag("Ball"))
         {
-            GameManager.instance.OnBallLost();
+            if (GameManager.instance.allowEvents && mode == Mode.loss)
+            {
+                GameManager.instance.OnBallLost();
+                Destroy(collision.gameObject, 2f);
+            }
         }
+
         //TODO slow down? speed up? invisible ball?
     }
 
