@@ -7,6 +7,8 @@ TagManager:
   - Ball
   - Required
   - Wall
+  - OneWayUp
+  - PickUp
   layers:
   - Default
   - TransparentFX
@@ -17,8 +19,8 @@ TagManager:
   - 
   - 
   - Ball
-  - 
-  - 
+  - Collidable
+  - Unselectable
   - 
   - 
   - 
@@ -55,6 +57,9 @@ TagManager:
     locked: 0
   - name: Paddle
     uniqueID: 1510748949
+    locked: 0
+  - name: PowerUps
+    uniqueID: 39032635
     locked: 0
   - name: Ball
     uniqueID: 3153406291

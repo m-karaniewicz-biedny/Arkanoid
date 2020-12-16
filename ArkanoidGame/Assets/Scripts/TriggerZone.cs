@@ -15,8 +15,13 @@ public class TriggerZone : MonoBehaviour
             if (GameManager.instance.allowEvents && mode == Mode.loss)
             {
                 GameManager.instance.OnBallLost();
-                Destroy(collision.gameObject, 2f);
+                Destroy(collision.gameObject, 1f);
             }
+        }
+
+        if(collision.CompareTag("PickUp"))
+        {
+            Destroy(collision.gameObject, 1f);
         }
 
         //TODO slow down? speed up? invisible ball?

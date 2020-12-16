@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
 
     private int activeBalls = 0;
 
-    internal bool isUIActive = true;
+    internal bool isPaused = false;
     internal bool intro = true;
 
     internal PaddleController vaus;
@@ -35,6 +35,9 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        Cursor.lockState = CursorLockMode.Confined;
+        Cursor.visible = false;
+
         GameStart();
     }
 
@@ -45,6 +48,12 @@ public class GameManager : MonoBehaviour
             if (LevelManager.eliminationRequiredList.Count == 0)
             {
                 GameOver(true);
+            }
+
+            if(Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Space) )
+            {
+                UIManager.instance.SetGamePause(!isPaused);
+                isPaused = !isPaused;
             }
         }
     }
@@ -63,9 +72,7 @@ public class GameManager : MonoBehaviour
     public void GameStart()
     {
         activeBalls = 0;
-        allowEvents = true;
-
-
+        allowEvents = false;
 
         StartCoroutine(GameStartSequence());
 
@@ -87,16 +94,17 @@ public class GameManager : MonoBehaviour
         {
             lm.LoadLevel(levelProgress);
             vaus.transform.position = new Vector2(LevelManager.playArea.width / 2f, 1f);
-            vaus.SetPaddleLength(LevelManager.playArea.width);
+            vaus.ResizePaddle(LevelManager.playArea.width,0,1);
             yield return new WaitForSeconds(2f);
             UIManager.instance.TitleFadeout(3f);
         }
         else
         {
+            lm.DestroyPreviousLevel();
             _duration = 1f;
 
             StartCoroutine(Helpers.MoveObjectOverTimeSequence(vaus.transform, new Vector2(LevelManager.playArea.width / 2f, 1f), _duration, 3));
-            StartCoroutine(vaus.ResizePaddleOverTimeSequence(LevelManager.playArea.width, _duration, 3f));
+            vaus.ResizePaddle(LevelManager.playArea.width, _duration, 3f);
 
             yield return new WaitForSeconds(_duration);
 
@@ -106,7 +114,7 @@ public class GameManager : MonoBehaviour
         }
 
         _duration = 1f;
-        StartCoroutine(vaus.ResizePaddleOverTimeSequence(vaus.defaultPaddleLength, _duration, 4));
+        vaus.ResizePaddle(vaus.defaultBasePaddleLength, _duration, 4);
         yield return new WaitForSeconds(_duration);
 
         vaus.SpawnStartingBalls();
@@ -115,6 +123,7 @@ public class GameManager : MonoBehaviour
 
 
         vaus.SetControlsActive(true);
+        allowEvents = true;
         intro = false;
 
         yield return null;
@@ -131,9 +140,9 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameWonSequence()
     {
-        StartCoroutine(SmoothTimeSlowSequence(2f,1f,1f,1f));
+        StartCoroutine(SmoothTimeSlowSequence(2f,1f,0f,1f));
 
-        yield return new WaitForSecondsRealtime(4f);
+        yield return new WaitForSecondsRealtime(3f);
 
         levelProgress++;
 

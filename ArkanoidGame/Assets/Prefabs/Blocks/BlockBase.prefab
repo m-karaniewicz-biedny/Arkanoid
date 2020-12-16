@@ -120,7 +120,7 @@ GameObject:
   - component: {fileID: 2038062485568634722}
   - component: {fileID: 2038062485568634723}
   - component: {fileID: 2038062485568634721}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: BlockBase
   m_TagString: Required
   m_Icon: {fileID: 0}
@@ -205,3 +205,5 @@ MonoBehaviour:
   HPColor1: {r: 0, g: 1, b: 0.8927181, a: 1}
   HPColor2: {r: 0.9140396, g: 1, b: 0, a: 1}
   HPColor3: {r: 1, g: 0, b: 0.11818838, a: 1}
+  pickUpPrefab: {fileID: 2641995634835738695, guid: c965e0cd8d03ab24bb002d56bd62cd36,
+    type: 3}

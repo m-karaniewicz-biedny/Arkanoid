@@ -7,6 +7,7 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager instance;
     public TextMeshProUGUI title;
+    public GameObject pauseMenu;
 
     private void Awake()
     {
@@ -15,6 +16,27 @@ public class UIManager : MonoBehaviour
             instance = this;
         }
         else Destroy(gameObject);
+
+        pauseMenu.SetActive(false);
+    }
+
+    public void SetGamePause(bool pause)
+    {
+        pauseMenu.SetActive(pause);
+
+        if (pause)
+        {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
+            Time.timeScale = 0;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Confined;
+            Cursor.visible = false;
+            Time.timeScale = 1;
+        }
+
     }
 
     public void TitleFadeout(float duration)
@@ -22,7 +44,24 @@ public class UIManager : MonoBehaviour
         StartCoroutine(UITextFadeout(duration, title, 2));
     }
 
+    public void ExitGame()
+    {
+        StartCoroutine(ExitSequence());
+    }
 
+    private IEnumerator ExitSequence()
+    {
+
+
+#if (UNITY_EDITOR)
+        UnityEditor.EditorApplication.isPlaying = false;
+#elif (UNITY_STANDALONE)
+        Application.Quit();
+#elif (UNITY_WEBGL)
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
+#endif
+        yield return null;
+    }
 
     public static IEnumerator UITextFadeout(float duration, TextMeshProUGUI text, float smoothing)
     {

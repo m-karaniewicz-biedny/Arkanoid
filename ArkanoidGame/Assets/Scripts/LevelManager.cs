@@ -49,12 +49,13 @@ public class LevelManager : MonoBehaviour
         Application.Quit();
     }
 
-    private void DestroyPreviousLevel()
+    public void DestroyPreviousLevel()
     {
         foreach (GameObject entry in entityList)
         {
             Destroy(entry);
         }
+        VFXManager.DestroyAllParticles();
         eliminationRequiredList.Clear();
         entityList.Clear();
     }
@@ -63,7 +64,7 @@ public class LevelManager : MonoBehaviour
     {
         if (index >= 0 && index < levels.Length)
         {
-            DestroyPreviousLevel();
+
 
             currentLevelIndex = index;
 
@@ -118,7 +119,7 @@ public class LevelManager : MonoBehaviour
 
     private void SpawnRectPrefab(GameObject rectPrefab, Rect rect)
     {
-        GameObject obj = Instantiate(rectPrefab, new Vector2(rect.x, rect.y), Quaternion.identity);
+        GameObject obj = Instantiate(rectPrefab, new Vector2(rect.x, rect.y), Quaternion.identity, levelParent);
         obj.transform.localScale = new Vector2(rect.width, rect.height);
         entityList.Add(obj);
     }
@@ -132,7 +133,7 @@ public class LevelManager : MonoBehaviour
             for (int y = 0; y < values.GetLength(1); y++)
             {
                 GameObject obj = CreateLevelElement(prefabList[values[x, y]], new Vector2(x, y));
-                if(obj!=null)
+                if (obj != null)
                 {
                     if (obj.CompareTag("Required"))
                     {
@@ -158,7 +159,7 @@ public class LevelManager : MonoBehaviour
     {
         if (prefab != null)
         {
-            GameObject obj = Instantiate(prefab, position + gridCellExtents, Quaternion.identity,levelParent);
+            GameObject obj = Instantiate(prefab, position + gridCellExtents, Quaternion.identity, levelParent);
             entityList.Add(obj);
 
             return obj;
