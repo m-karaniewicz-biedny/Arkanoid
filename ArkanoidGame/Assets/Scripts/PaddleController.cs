@@ -11,7 +11,6 @@ public class PaddleController : MonoBehaviour
 
     [Header("Settings")]
     [SerializeField] private Ball ballPrefab;
-    [SerializeField] private bool randomBallStartingPosition = true;
     [SerializeField] private bool useRBVelocityBasedMovement = true;
 
     //Persistent Stats
@@ -21,8 +20,8 @@ public class PaddleController : MonoBehaviour
     internal int ammoLeft = 0;
 
     //Temporary Stats
-    //private 
-
+    private float paddleLengthBonusMultiplier = 1;
+    private float globalBallSpeedBonusMultiplier = 1;
 
     private Rigidbody2D rb;
 
@@ -30,7 +29,6 @@ public class PaddleController : MonoBehaviour
 
     private float currentActualPaddleLength;
     private float targetPaddleLength;
-    private float paddleLengthBonusMultiplier = 1;
 
     private Coroutine resizePaddleCoroutine;
 
@@ -94,7 +92,7 @@ public class PaddleController : MonoBehaviour
         {
             foreach (KeyValuePair<Ball, Vector2> entry in attachedBalls)
             {
-                if(entry.Key!=null)
+                if (entry.Key != null)
                 {
                     entry.Key.transform.position = transform.position + (Vector3)entry.Value;
                 }
@@ -216,9 +214,9 @@ public class PaddleController : MonoBehaviour
     }
     public void SpawnStartingBalls()
     {
-        SpawnNewBalls(startingBalls);
+        SpawnNewBalls(startingBalls, true);
     }
-    public void SpawnNewBalls(int ballCount)
+    public void SpawnNewBalls(int ballCount, bool levelStart = false)
     {
         if (ballCount == 0) return;
 
@@ -235,7 +233,16 @@ public class PaddleController : MonoBehaviour
             GameManager.instance.OnBallGained();
             AttachBall(newBall, positions[i]);
 
-            VFXManager.SpawnParticleOneshot(VFXManager.instance.ballSpawnExplosionVFX, newBall.transform.position);
+            if (levelStart)
+            {
+                VFXManager.SpawnParticleOneshot(VFXManager.instance.ballSpawnExplosionVFX, newBall.transform.position);
+                AudioManager.instance.Play("BallSpawn");
+            }
+            else
+            {
+                VFXManager.SpawnParticleOneshot(VFXManager.instance.ballSpawnExplosionSmallVFX, newBall.transform.position);
+                AudioManager.instance.Play("BallSpawn");
+            }
         }
 
         Dictionary<Ball, Vector2> dict = new Dictionary<Ball, Vector2>(attachedBalls);
@@ -301,18 +308,20 @@ public class PaddleController : MonoBehaviour
 
     public void ReceivePowerUp(PowerUpEffect effect)
     {
-        //Debug.Log(effect.name);
+        if(GameManager.instance.allowEvents)
+        {
+            //Debug.Log(effect.name);
 
-        //One-time effects
-        SpawnNewBalls(effect.balls);
-        SetMoney(money + effect.money);
-        SetShields(shields + effect.shield);
+            //One-time effects
+            SpawnNewBalls(effect.balls);
+            SetMoney(money + effect.money);
+            SetShields(shields + effect.shield);
 
-        permaBonusBasePaddleLength += effect.paddleLength;
-        UpdatePaddleLengthToTargetLength();
+            permaBonusBasePaddleLength += effect.paddleLength;
+            UpdatePaddleLengthToTargetLength();
 
-        StartCoroutine(LaunchTemporaryPowerUpSequence(effect));
-
+            if(effect.mainDuration != 0) StartCoroutine(LaunchTemporaryPowerUpSequence(effect));
+        }
     }
 
     private IEnumerator LaunchTemporaryPowerUpSequence(PowerUpEffect effect)
@@ -342,6 +351,11 @@ public class PaddleController : MonoBehaviour
     }
 
     #endregion
+
+    public void StopActivity(bool reset = false)
+    {
+        StopAllCoroutines();
+    }
 
     public void SetControlsActive(bool active = true)
     {

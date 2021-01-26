@@ -20,10 +20,13 @@ public class VFXManager : MonoBehaviour
     }
 
     public ParticleSystem ballSpawnExplosionVFX;
+    public ParticleSystem ballSpawnExplosionSmallVFX;
     public ParticleSystem ballBounceVFX;
     public ParticleSystem blockDeathVFX;
     public ParticleSystem blockDamagedVFX;
     public ParticleSystem powerUpCollectVFX;
+    public ParticleSystem ballModificationVFX;
+
 
     public static void SpawnParticleOneshot(ParticleSystem particle, Vector2 position)
     {

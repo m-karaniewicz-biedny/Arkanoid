@@ -46,6 +46,7 @@ public class PickUp : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             VFXManager.SpawnParticleOneshot(VFXManager.instance.powerUpCollectVFX, transform.position, effect.backgroundColor);
+            AudioManager.instance.Play("PickupDestroy");
             vaus.ReceivePowerUp(effect);
             DestroyPowerUp();
         }

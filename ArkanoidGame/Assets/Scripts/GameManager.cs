@@ -81,6 +81,7 @@ public class GameManager : MonoBehaviour
     public void GameOver(bool win)
     {
         allowEvents = false;
+        vaus.StopActivity();
         if (win) StartCoroutine(GameWonSequence());
         else StartCoroutine(GameLostSequence());
     }
@@ -94,6 +95,7 @@ public class GameManager : MonoBehaviour
         {
             lm.LoadLevel(levelProgress);
             vaus.transform.position = new Vector2(LevelManager.playArea.width / 2f, 1f);
+            
             vaus.ResizePaddle(LevelManager.playArea.width,0,1);
             yield return new WaitForSeconds(2f);
             UIManager.instance.TitleFadeout(3f);
@@ -140,6 +142,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator GameWonSequence()
     {
+        vaus.LaunchAttachedBalls();
+
         StartCoroutine(SmoothTimeSlowSequence(2f,1f,0f,1f));
 
         yield return new WaitForSecondsRealtime(3f);

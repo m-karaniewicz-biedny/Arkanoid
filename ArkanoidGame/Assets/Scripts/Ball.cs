@@ -156,6 +156,7 @@ public class Ball : SimpleMovement2D
 
     private void OnBounce()
     {
+        AudioManager.instance.Play("BallBounce");
         ResetSpin();
         //StartCoroutine(BounceCooldown());
     }

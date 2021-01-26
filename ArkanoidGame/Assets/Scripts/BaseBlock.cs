@@ -61,12 +61,14 @@ public class BaseBlock : MonoBehaviour
         if (LevelManager.eliminationRequiredList.Contains(gameObject))
             LevelManager.eliminationRequiredList.Remove(gameObject);
 
-        if(Random.value>0.75f)
+        //implement weighted chance per pickup type
+        if (Random.value>0.75f) 
         {
             PickUp p = Instantiate(pickUpPrefab, transform.position, Quaternion.identity, pickUpParent);
             LevelManager.entityList.Add(p.gameObject);
         }
 
+        AudioManager.instance.Play("BlockDestroy");
         VFXManager.SpawnParticleOneshot(VFXManager.instance.blockDeathVFX, transform.position);
 
         Destroy(gameObject);
