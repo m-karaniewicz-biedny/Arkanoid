@@ -45,9 +45,11 @@ public class AudioManager : MonoBehaviour
         musicSource.transform.parent = transform;
         musicSource.loop = true;
         musicSource.volume = 0.5f;
+        musicSource.spatialBlend = 0;
         sfxSource = new GameObject().AddComponent<AudioSource>();
         sfxSource.transform.parent = transform;
         sfxSource.volume = 0.5f;
+        sfxSource.spatialBlend = 0;
     }
 
     //System.Single instead of float to receive value from UI UnityEvent
