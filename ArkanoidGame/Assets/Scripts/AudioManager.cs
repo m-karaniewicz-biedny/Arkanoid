@@ -6,23 +6,25 @@ using System;
 public class Sound
 {
     public string name;
-
     public AudioClip clip;
 
     [Range(0, 1)]
-    public float volume = 1;
-    [Range(0.1f, 3)]
-    public float pitch = 1;
+    public float sfxVolume = 1;
 
-    internal AudioSource source;
+    public bool isMusic = false;
+
+    [HideInInspector]
+    public float lastStartTime;
 }
 
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
 
-    [Range(0,1)]
-    public float globalVolumeScale = 0.5f;
+    public float globalSFXCooldown = 0.15f;
+
+    private AudioSource musicSource;
+    private AudioSource sfxSource;
 
     public Sound[] sounds;
 
@@ -37,37 +39,52 @@ public class AudioManager : MonoBehaviour
         {
             Destroy(gameObject);
             return;
-        } 
-
-        foreach(Sound s in sounds)
-        {
-            s.source = gameObject.AddComponent<AudioSource>();
-            s.source.playOnAwake = false;
-            s.source.clip = s.clip;
-            s.source.volume = s.volume;
-            s.source.pitch = s.pitch;
         }
+
+        musicSource = new GameObject().AddComponent<AudioSource>();
+        musicSource.transform.parent = transform;
+        musicSource.loop = true;
+        musicSource.volume = 0.5f;
+        sfxSource = new GameObject().AddComponent<AudioSource>();
+        sfxSource.transform.parent = transform;
+        sfxSource.volume = 0.5f;
     }
 
-    private void AdjustGlobalVolume(float volumeMultiplier)
+    //System.Single instead of float to receive value from UI UnityEvent
+    public void SetSFXVolume(System.Single volume)
     {
-        globalVolumeScale = volumeMultiplier;
-        foreach (Sound s in sounds)
-        {
-            s.source.volume *= volumeMultiplier;
-        }
+        sfxSource.volume = volume;
+    }
+
+    public void SetMusicVolume(System.Single volume)
+    {
+        musicSource.volume = volume;
     }
 
     public void Play(string name)
     {
         Sound s = Array.Find(sounds, sound => sound.name == name);
-        if(s==null)
+        if (s == null)
         {
             Debug.LogError($"No sound named \"{name}\".");
             return;
         }
 
         Debug.Log($"Playing {name}");
-        s.source.Play();
+        if (!s.isMusic)
+        {
+            if(Time.time - s.lastStartTime > globalSFXCooldown)
+            {
+                sfxSource.PlayOneShot(s.clip, s.sfxVolume);
+                s.lastStartTime = Time.time;
+            }
+        }
+        else
+        {
+            musicSource.clip = s.clip;
+            musicSource.Play();
+        }
+
+
     }
 }

@@ -22,6 +22,8 @@ public class PaddleController : MonoBehaviour
     //Temporary Stats
     private float paddleLengthBonusMultiplier = 1;
     private float globalBallSpeedBonusMultiplier = 1;
+    private float paddleLengthBonusMultiplierBase = 1;
+    private float globalBallSpeedBonusMultiplierBase = 1;
 
     private Rigidbody2D rb;
 
@@ -236,7 +238,7 @@ public class PaddleController : MonoBehaviour
             if (levelStart)
             {
                 VFXManager.SpawnParticleOneshot(VFXManager.instance.ballSpawnExplosionVFX, newBall.transform.position);
-                AudioManager.instance.Play("BallSpawn");
+                AudioManager.instance.Play("LightningExplosion");
             }
             else
             {
@@ -331,6 +333,11 @@ public class PaddleController : MonoBehaviour
         WaitForEndOfFrame wait = new WaitForEndOfFrame();
 
         paddleLengthBonusMultiplier += (effect.paddleLengthMultiplier - 1);
+        UpdatePaddleLengthToTargetLength();
+
+        globalBallSpeedBonusMultiplier += (effect.ballSpeedMultiplier - 1);
+        ApplyGlobalBallSpeedScale(globalBallSpeedBonusMultiplier);
+
 
         Debug.Log($"Started temporary effect {effect.name}.");
 
@@ -345,6 +352,9 @@ public class PaddleController : MonoBehaviour
         paddleLengthBonusMultiplier -= (effect.paddleLengthMultiplier - 1);
         UpdatePaddleLengthToTargetLength();
 
+        globalBallSpeedBonusMultiplier -= (effect.ballSpeedMultiplier - 1);
+        ApplyGlobalBallSpeedScale(globalBallSpeedBonusMultiplier);
+
         Debug.Log($"Ended temporary effect {effect.name}.");
 
         yield return null;
@@ -352,8 +362,20 @@ public class PaddleController : MonoBehaviour
 
     #endregion
 
-    public void StopActivity(bool reset = false)
+    private void ApplyGlobalBallSpeedScale(float newMultiplier)
     {
+        Ball[] balls = FindObjectsOfType<Ball>();
+        for (int i = 0; i < balls.Length; i++)
+        {
+            balls[i].SetVelocityScale(newMultiplier);
+        }
+    }
+
+    public void ResetActivity(bool reset = false)
+    {
+        paddleLengthBonusMultiplier = paddleLengthBonusMultiplierBase;
+        globalBallSpeedBonusMultiplier = globalBallSpeedBonusMultiplierBase;
+        ApplyGlobalBallSpeedScale(globalBallSpeedBonusMultiplier);
         StopAllCoroutines();
     }
 

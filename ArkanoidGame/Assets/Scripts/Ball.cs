@@ -5,6 +5,7 @@ using UnityEngine;
 public class Ball : SimpleMovement2D
 {
     internal bool isActive = true;
+    internal bool frozen = false;
 
     //Stats
     internal const float baseSpeed = 12;
@@ -15,6 +16,9 @@ public class Ball : SimpleMovement2D
 
     private const float maxSpin = 120;
     private float spinSpeed = 0;
+
+    private Vector2 unscaledVelocity;
+    private float velocityScale = 1;
 
     private Vector2 storedVelocity;
     private float storedSpinSpeed;
@@ -44,26 +48,33 @@ public class Ball : SimpleMovement2D
     {
         base.Update();
 
-        if (Time.time - lastPriorityBounceTime > maxTimeWithoutPriorityBounce)
+        if (!frozen)
         {
-            velocity.y -= priorityBounceGravity * Time.deltaTime;
-            //Debug.Log("GRAV");
+            if (Time.time - lastPriorityBounceTime > maxTimeWithoutPriorityBounce)
+            {
+                SetVelocity(new Vector2(GetVelocity().x, GetVelocity().y - priorityBounceGravity * Time.deltaTime));
+
+                //unscaledVelocity.y -= priorityBounceGravity * Time.deltaTime;
+                //Debug.Log("GRAV");
+            }
+
+            if (spinSpeed != 0)
+            {
+                SetVelocity(Quaternion.AngleAxis(spinSpeed * Time.deltaTime, Vector3.forward) * GetVelocity());
+            }
+
+            float rot = 1000f;
+
+            spinTrailParent.Rotate(Vector3.forward, Mathf.Lerp(0, rot, Mathf.Abs(spinSpeed) / maxSpin) * Time.deltaTime * Mathf.Sign(spinSpeed));
+            spinTrailParent.localScale = new Vector3(Mathf.Lerp(0, 1f, Mathf.Abs(spinSpeed / maxSpin)), 1, 1);
+
+            velocity = unscaledVelocity * velocityScale;
         }
-
-        if (spinSpeed != 0)
-        {
-            velocity = Quaternion.AngleAxis(spinSpeed * Time.deltaTime, Vector3.forward) * velocity;
-
-        }
-
-        float rot = 1000f;
-
-        spinTrailParent.Rotate(Vector3.forward, Mathf.Lerp(0, rot, Mathf.Abs(spinSpeed) / maxSpin) * Time.deltaTime * Mathf.Sign(spinSpeed));
-        spinTrailParent.localScale = new Vector3(Mathf.Lerp(0, 1f, Mathf.Abs(spinSpeed / maxSpin)), 1, 1);
     }
 
     public void Freeze(bool freeze)
     {
+        frozen = freeze;
         if (freeze)
         {
             storedVelocity = velocity;
@@ -81,7 +92,23 @@ public class Ball : SimpleMovement2D
     public void Launch(Vector2 direction)
     {
         Freeze(false);
-        velocity = direction.normalized * baseSpeed;
+        SetVelocity(direction.normalized * baseSpeed);
+    }
+
+    public void SetVelocityScale(float newVelocityScale)
+    {
+        velocityScale = newVelocityScale;
+    }
+
+    private void SetVelocity(Vector2 newVel)
+    {
+        unscaledVelocity = newVel;
+    }
+
+    private Vector2 GetVelocity(bool unscaled = true)
+    {
+        if (unscaled) return unscaledVelocity;
+        else return velocity;
     }
 
     private void CollisionEnter(Collider2D collider, CollisionSide side)
@@ -137,19 +164,23 @@ public class Ball : SimpleMovement2D
 
             if (side == CollisionSide.left)
             {
-                velocity.x = Mathf.Abs(velocity.x);
+                SetVelocity(new Vector2(Mathf.Abs(GetVelocity().x), GetVelocity().y));
+                //velocity.x = Mathf.Abs(GetVelocity().x);
             }
             else if (side == CollisionSide.right)
             {
-                velocity.x = -Mathf.Abs(velocity.x);
+                SetVelocity(new Vector2(-Mathf.Abs(GetVelocity().x), GetVelocity().y));
+                //velocity.x = -Mathf.Abs(velocity.x);
             }
             else if (side == CollisionSide.above)
             {
-                velocity.y = -Mathf.Abs(velocity.y);
+                SetVelocity(new Vector2(GetVelocity().x, -Mathf.Abs(GetVelocity().y)));
+                //velocity.y = -Mathf.Abs(velocity.y);
             }
             else
             {
-                velocity.y = Mathf.Abs(velocity.y);
+                SetVelocity(new Vector2(GetVelocity().x, Mathf.Abs(GetVelocity().y)));
+                //velocity.y = Mathf.Abs(velocity.y);
             }
         }
     }

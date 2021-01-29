@@ -38,6 +38,8 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Confined;
         Cursor.visible = false;
 
+        AudioManager.instance.Play("Music");
+
         GameStart();
     }
 
@@ -81,7 +83,7 @@ public class GameManager : MonoBehaviour
     public void GameOver(bool win)
     {
         allowEvents = false;
-        vaus.StopActivity();
+        vaus.ResetActivity();
         if (win) StartCoroutine(GameWonSequence());
         else StartCoroutine(GameLostSequence());
     }

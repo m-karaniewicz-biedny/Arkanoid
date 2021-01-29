@@ -8,6 +8,7 @@ public class UIManager : MonoBehaviour
     public static UIManager instance;
     public TextMeshProUGUI title;
     public GameObject pauseMenu;
+    //public slider musicVolumeSlider;
 
     private void Awake()
     {
@@ -83,5 +84,8 @@ public class UIManager : MonoBehaviour
 
         yield return null;
     }
+
+
+
 
 }

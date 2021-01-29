@@ -363,8 +363,8 @@ RectTransform:
   m_Father: {fileID: 1040132604}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.2, y: 1}
+  m_AnchorMin: {x: 0.4, y: 0}
+  m_AnchorMax: {x: 0.6, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1649,8 +1649,8 @@ RectTransform:
   m_Father: {fileID: 2034759772}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0.2, y: 1}
+  m_AnchorMin: {x: 0.4, y: 0}
+  m_AnchorMax: {x: 0.6, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 20, y: 20}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1820,12 +1820,23 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1073094518}
   m_HandleRect: {fileID: 1073094517}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0.5
   m_Size: 0.2
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1427892143}
+        m_MethodName: SetMusicVolume
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1264500285
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1971,24 +1982,38 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d31024ebdc1db7499521a6ea7b26691, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  globalVolumeScale: 0.5
+  globalSFXCooldown: 0.15
   sounds:
   - name: BallSpawn
-    clip: {fileID: 8300000, guid: 98602e4f5bdbbc245873504398cb28e7, type: 3}
-    volume: 1
-    pitch: 1
+    clip: {fileID: 8300000, guid: 155c5eac4b2e83b4780511a45a471f80, type: 3}
+    sfxVolume: 1
+    isMusic: 0
+    lastStartTime: 0
   - name: BallBounce
-    clip: {fileID: 8300000, guid: 7f5ec69331afe9e4eac82476b4ac2822, type: 3}
-    volume: 1
-    pitch: 1
+    clip: {fileID: 8300000, guid: 346746ca3b320ec4ab9055f0198ab3e8, type: 3}
+    sfxVolume: 1
+    isMusic: 0
+    lastStartTime: 0
   - name: BlockDestroy
-    clip: {fileID: 8300000, guid: ecbccfe477f8cb0419c612cc460739a8, type: 3}
-    volume: 1
-    pitch: 1
+    clip: {fileID: 8300000, guid: 85266c55999b633488919b42476eee25, type: 3}
+    sfxVolume: 0.6
+    isMusic: 0
+    lastStartTime: 0
   - name: PickupDestroy
-    clip: {fileID: 8300000, guid: 3eaa239faf0499440aa94a98467e8cd3, type: 3}
-    volume: 1
-    pitch: 1
+    clip: {fileID: 8300000, guid: 2d1fbc0ec16fb50438d5dd0aa3c23ce5, type: 3}
+    sfxVolume: 0.7
+    isMusic: 0
+    lastStartTime: 0
+  - name: LightningExplosion
+    clip: {fileID: 8300000, guid: 2ccb80e4e97cec24489aa8f2d5bfa7b1, type: 3}
+    sfxVolume: 1
+    isMusic: 0
+    lastStartTime: 0
+  - name: Music
+    clip: {fileID: 8300000, guid: 30854748156ca5541ae20604c04c7b88, type: 3}
+    sfxVolume: 1
+    isMusic: 1
+    lastStartTime: 0
 --- !u!1 &1454002558
 GameObject:
   m_ObjectHideFlags: 0
@@ -2070,12 +2095,23 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 276373929}
   m_HandleRect: {fileID: 276373928}
   m_Direction: 0
-  m_Value: 1
+  m_Value: 0.5
   m_Size: 0.2
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1427892143}
+        m_MethodName: SetSFXVolume
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1454002561
 MonoBehaviour:
   m_ObjectHideFlags: 0
